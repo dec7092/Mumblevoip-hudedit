@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<meta charset="utf-8">
+        <script src="nui://game/ui/jquery.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="ui.css" type="text/css">
+        <script src="ui.js" type="text/javascript"></script>
+
+		
+		<style>
+
+
+			.info-container {
+				position: absolute;
+				bottom: 2.4%;
+				left: 18.8%;
+				scale: 8;
+				float:right;
+				width: 5px;
+				height: 5px;
+				transform: rotate(90deg);
+				color: rgb(220,220,220);
+				font-size: 0.6vw;
+				letter-spacing: -1.5px;
+				font-family: sans-serif;
+
+
+	}			
+
+
+			.talking {
+				color: rgba(255, 255, 51, 255);
+			}
+			.radiotalk {
+				color: rgba(255, 0, 0, 255);
+			}
+
+			.watermark {
+				position: fixed;
+				top: 0%;
+				right: 0%;
+				text-align: right;
+				opacity: 0.4;
+				z-index: 99;
+				color: rgb(184, 185, 185);
+				font-family: Arial;
+				font-weight: normal;
+				font-size: 0.5vw;
+				opacity: 0.8;
+			}
+		</style>
+		<script type="text/javascript">
+			let speakerEnabled = true;
+			
+			window.addEventListener("message", function(event) {
+				var item = event.data;
+
+				if (item.sound && item.volume) {
+					let snd = document.getElementById(item.sound);
+					snd.load();
+					snd.volume = item.volume;
+					snd.play();
+				}
+
+				if (item.speakerOption != null) {
+					speakerEnabled = item.speakerOption;
+				}
+
+				if (item.mode) {					
+					let modeElem = document.getElementById("voip-mode");
+
+					modeElem.textContent = item.mode + (item.radioActive ? "" : "");
+
+					if (item.talking != null) {
+						if (item.radioActive) {
+							modeElem.className = "radiotalk"
+						} else if (item.talking){
+							modeElem.className = "talking"
+						} else {
+							modeElem.className = ""
+						}
+					}						
+				}
+
+				if (item.radio != null) {
+					let radioElem = document.getElementById("voip-radio");
+
+					if (item.radio > 0 || isNaN(item.radio)) {
+						radioElem.textContent = "";					
+					} else {
+						radioElem.textContent = "";
+					}
+				}
+
+				if (item.call != null) {
+					let callElem = document.getElementById("voip-call");
+					
+					if (item.call > 0) {
+						if (speakerEnabled) {
+							callElem.textContent = "[Call] [" + (item.speaker ? "ðŸ”Š" : "ðŸ”ˆ") + "] " + item.call;
+						} else {
+							callElem.textContent = "[Call] " + item.call;
+						}
+					} else {
+						callElem.textContent = "";
+					}
+				}
+
+				if (item.warningId != null) {
+					let warningElem = document.getElementById("voip-warning");
+
+					if (item.warningMsg != null) {
+						let warningItem = document.createElement("div");
+						let warningItemTitle = document.createElement("span");
+						let warningItemContent = document.createElement("span");
+
+						warningItem.id = item.warningId;
+						warningItemTitle.textContent = "[Warning] ";
+						warningItemTitle.className = "talking";
+						warningItemContent.textContent = item.warningMsg;
+
+						warningItem.appendChild(warningItemTitle);
+						warningItem.appendChild(warningItemContent);
+						warningElem.appendChild(warningItem);
+					} else {
+						let warningItem = document.getElementById(item.warningId);
+						warningElem.removeChild(warningItem);
+					}
+				}
+			});
+		</script>
+        <meta charset="utf-8">
+        <script src="nui://game/ui/jquery.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="ui.css" type="text/css">
+        <script src="ui.js" type="text/javascript"></script>
+
+
+	</head>
+	<body>
+		<audio id="audio_on" src="mic_click_on.ogg"></audio>
+		<audio id="audio_off" src="mic_click_off.ogg"></audio>
+		
+
+		<div class="info-container">
+			<div class="voip"><span id="voip-mode"></span></div>
+			<div id="voip-radio"></div>
+			<div id="voip-call"></div>
+			<div id="voip-warning"></div>
+		</div>
+
+        </div>
+		
+	</body>
+</html>
